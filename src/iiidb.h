@@ -17,7 +17,7 @@ struct iiidb_t : public seclude::db_t {
 		  " fileid integer NOT NULL,"
 		  " filename text NOT NULL,"
 		  " filesize integer NOT NULL,"
-		  " filesignature text NOT NULL UNIQUE,"
+		  " filesignature text NOT NULL,"
 		  " encryption text NOT NULL,"
 		  " flags integer NOT NULL"
 		  ")" );

@@ -14,6 +14,7 @@ eyekinfig_t::eyekinfig_t(const std::string& ma) : macaddress(ma), cfg(0) {
 	    CFG_STR((char*)"on-upload-photo",(char*)"",CFGF_NONE),
 	    CFG_STR((char*)"on-mark-last-photo-in-roll",(char*)"",CFGF_NONE),
 	    CFG_INT((char*)"umask",022,CFGF_NONE),
+        CFG_STR((char*)"logfile",(char*)"/var/log/" PACKAGE "/%s.log",CFGF_NONE),
 	    CFG_END()
 	};
 	cfg = cfg_init(opts,CFGF_NONE);
@@ -41,6 +42,11 @@ eyekinfig_t::~eyekinfig_t() {
 std::string eyekinfig_t::get_targetdir() {
     assert(cfg);
     return gnu::autosprintf(cfg_getstr(cfg,"targetdir"),macaddress.c_str());
+}
+
+std::string eyekinfig_t::get_logfile() {
+    assert(cfg);
+    return gnu::autosprintf(cfg_getstr(cfg,"logfile"),macaddress.c_str());
 }
 
 std::string eyekinfig_t::get_upload_key() {

@@ -108,9 +108,9 @@ namespace seclude {
 
 	stmt_t prepare(const char *s) {
 	    sqlite3_stmt *r=0;
-	    int c = sqlite3_prepare(get(),s,-1,&r,0);
+	    int c = sqlite3_prepare_v2(get(),s,-1,&r,0);
 	    stmt_t rv(r);
-	    worry(c,"failed to sqlite3_prepare()");
+	    worry(c,"failed to sqlite3_prepare_v2()");
 	    return rv;
 	}
 

@@ -300,13 +300,14 @@ int eyefiworker::UploadPhoto(
     std::string tbn = (ls==std::string::npos)?tf:tf.substr(ls+1);
     ls = lf.rfind('/');
     std::string lbn = (ls==std::string::npos)?lf:lf.substr(ls+1);
-    std::string ttf,tlf;
+    std::string ttf;
+    std::string tlf= eyekinfig.get_logfile();
     bool success = false;
     std::string td = kinfig->get_targetdir();
     for(int i=0;i<32767;++i) {
 	const char *fmt = i ? "%1$s/(%3$05d)%2$s" : "%1$s/%2$s";
 	ttf = (const char*)gnu::autosprintf(fmt,td.c_str(),tbn.c_str(),i);
-	if(!lf.empty()) tlf = (const char*)gnu::autosprintf(fmt,td.c_str(),lbn.c_str(),i);
+//	if(!lf.empty()) tlf = (const char*)gnu::autosprintf(fmt,td.c_str(),lbn.c_str(),i);
 	if( (!link(tf.c_str(),ttf.c_str())) && (lf.empty() || !link(lf.c_str(),tlf.c_str())) ) {
 	    unlink(tf.c_str());
 	    if(!lf.empty()) unlink(lf.c_str());
@@ -336,7 +337,8 @@ int eyefiworker::UploadPhoto(
 	    putenv( gnu::autosprintf("EYEFI_UPLOADED_ORIG=%s",tbn.c_str()) );
 	    putenv( gnu::autosprintf("EYEFI_MACADDRESS=%s",macaddress.c_str()) );
 	    putenv( gnu::autosprintf("EYEFI_UPLOADED=%s",ttf.c_str()) );
-	    if(!lf.empty()) putenv( gnu::autosprintf("EYEFI_LOG=%s",tlf.c_str()) );
+        putenv( gnu::autosprintf("EYEFI_LOG=%s",tlf.c_str()) );
+	    // if(!lf.empty()) putenv( gnu::autosprintf("EYEFI_LOG=%s",tlf.c_str()) );
 	    char *argv[] = { (char*)"/bin/sh", (char*)"-c", (char*)cmd.c_str(), 0 };
 	    execv("/bin/sh",argv);
 	    syslog(LOG_ERR,"Failed to execute '%s'",cmd.c_str());

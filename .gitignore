@@ -12,3 +12,5 @@ Makefile.in
 /NEWS
 TAGS
 /aux.d
+.idea/
+iii.iml
