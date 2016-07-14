@@ -52,13 +52,14 @@ iii_report()
 move_file()
 {
     local file_in="$1"
-    local dir_dest="$2"
+    local file_out="$2"
+    local dir_dest="$3"
     local ret=1
 
     mkdir -p "$dir_dest"
 
-    stem="$(basename "${file_in%.*}")"
-    ttype="$(basename "${file_in#*.}")"
+    stem="$(basename "${file_out%.*}")"
+    ttype="$(basename "${file_out#*.}")"
 
     for(( i=0; i < 100 ; ++i )) do
         [[ $i = 0 ]] && tf="$stem.$ttype" || tf="$(printf '%s_%02d.%s' "${stem}" "${i}" "${ttype}")"
@@ -79,14 +80,14 @@ if ! vars="$(j_time "$ul"||a_time "$ul"||m_time "$ul")" ; then
     report="Timeless $(basename "$ul") uploaded"
 
     # Move the file to the unorganized directory for manual handling
-    move_file "$ul" "$targetroot/unorganized"
+    move_file "$ul" "$ul" "$targetroot/unorganized"
 else
     eval "$vars"
     stem="$(printf "$FORMAT" "$year" "$month" "$day" "$hour" "$minute" "$second")"
     ttype="$(basename "${ul#*.}")"
     targetdir="$(printf "%s/%04d/%02d" "$targetroot" "$year" "$month")"
 
-    success=$( move_file "$ul" "$targetdir" )
+    success=$( move_file "$ul" "$stem.$ttype" "$targetdir" )
 
     if $success ; then
         report="$(basename "$ul") uploaded to $targetdir"
