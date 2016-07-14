@@ -53,7 +53,7 @@ move_file()
 {
     local file_in="$1"
     local dir_dest="$2"
-    local success=false
+    local ret=1
 
     mkdir -p "$dir_dest"
 
@@ -65,12 +65,12 @@ move_file()
         tf="$dir_dest/$tf"
 
         if ln -T "$ul" "$tf" &>/dev/null && rm "$ul"  ; then
-            success=true
+            ret=0
             break
         fi
     done
 
-    return ${success}
+    return ${ret}
 }
 
 ul="$EYEFI_UPLOADED"
