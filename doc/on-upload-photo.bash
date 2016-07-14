@@ -12,36 +12,30 @@ make_vars() {
 # Use exiftime to try to find the file time
 j_time() {
     local j="$1"
+    local ttype="$(basename "${j#*.}")"
     local etime="$(exiftime -s / -tg "$j" 2>/dev/null)"
     [[ -z "$etime" ]] && etime="$(exiftime -s / -td "$j" 2>/dev/null)"
     [[ -z "$etime" ]] && etime="$(exiftime -s / -tc "$j" 2>/dev/null)"
     [[ -z "$etime" ]] && return 1
-    make_vars JPG <<<$etime
+    make_vars "$ttype" <<<$etime
 }
 
 # Use iii-extract-riff-chunk to try to find the file time
 a_time() {
     local a="$1"
+    local ttype="$(basename "${j#*.}")"
     local etime="$(iii-extract-riff-chunk "$a" '/RIFF.AVI /LIST.ncdt/nctg'|dd bs=1 skip=82 count=19 2>/dev/null)"
     [[ -z "$etime" ]] && return 1
-    make_vars AVI <<<$etime
+    make_vars "$ttype" <<<$etime
 }
 
 # Use mediainfo to try to find the file time
 m_time() {
     local j="$1"
+    local ttype="$(basename "${j#*.}")"
     local etime="$(mediainfo "$j" | grep -i date | cut -d: -f2- | head -n1 | sed -e 's, UTC ,UTC/,' -e 's,-,:,g' 2>/dev/null)"
     [[ -z "$etime" ]] && return 1
-    make_vars MOV <<<$etime
-}
-
-# Use stat to try to find the file time
-f_time() {
-    local f="$1"
-    # etime needs to have the format "/Y:M:D H:I:S"
-    local etime="/$(stat -c %y "$j" | cut -d. -f1 | sed -e 's,-,:,g' 2>/dev/null)"
-    [[ -z "$etime" ]] && return 1
-    make_vars FILE <<<$etime
+    make_vars "$ttype" <<<$etime
 }
 
 iii_report()
