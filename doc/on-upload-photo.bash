@@ -89,7 +89,7 @@ else
     success=$( move_file "$ul" "$targetdir" )
 
     if $success ; then
-        report="$(basename "$tf") uploaded to $targetdir"
+        report="$(basename "$ul") uploaded to $targetdir"
     else
         report="$(basename "$ul") uploaded, but couldn't move it."
     fi
