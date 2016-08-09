@@ -67,7 +67,7 @@ move_file()
         fi
     done
 
-    return "${ret}"
+    echo -n "${ret}"
 }
 
 ul="$EYEFI_UPLOADED"
