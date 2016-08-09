@@ -1,7 +1,8 @@
 #!/bin/bash
-test -z "$targetroot" && targetroot="$(dirname "$EYEFI_UPLOADED")"
+test -z "$TARGET_ROOT" && TARGET_ROOT="$(dirname "$EYEFI_UPLOADED")"
 test -z "$EYEFI_LOG" && EYEFI_LOG="/var/log/iii/iiid.log"
 test -z "$FORMAT" && FORMAT="%04d%02d%02d_%02d%02d%02d"
+test -z "$S3_BUCKET" && S3_BUCKET="s3://zeven11.cabuki.com/photos"
 
 # etime needs to have the format "/Y:M:D H:I:S"
 make_vars() {
@@ -74,17 +75,24 @@ if ! vars="$(j_time "$ul"||a_time "$ul"||m_time "$ul")" ; then
     report="Timeless $(basename "$ul") uploaded"
 
     # Move the file to the unorganized directory for manual handling
-    move_file "$ul" "$ul" "$targetroot/unorganized"
+    move_file "$ul" "$ul" "$TARGET_ROOT/unorganized"
 else
     eval "$vars"
     stem="$(printf "$FORMAT" "$year" "$month" "$day" "$hour" "$minute" "$second")"
     ttype="$(basename "${ul#*.}")"
-    targetdir="$(printf "%s/%04d/%02d" "$targetroot" "$year" "$month")"
+    targetdir="$(printf "%s/%04d/%02d" "$TARGET_ROOT" "$year" "$month")"
 
     success=$( move_file "$ul" "$stem.$ttype" "$targetdir" )
 
     if $success ; then
         report="$(basename "$ul") uploaded to $targetdir"
+        
+        cd "$TARGET_ROOT"
+        sync_dir="$(printf "%04d/%02d" "$year" "$month")"
+        s3cmd sync -q "$sync_dir" "$S3_BUCKET"
+
+        report="$report\n'$sync_dir' synced with '$S3_BUCKET'"
+
     else
         report="$(basename "$ul") uploaded, but couldn't move it."
     fi
