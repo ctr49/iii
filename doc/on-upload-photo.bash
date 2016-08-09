@@ -49,7 +49,7 @@ move_file()
     local file_in="$1"
     local file_out="$2"
     local dir_dest="$3"
-    local ret=1
+    local ret=""
 
     mkdir -p "$dir_dest"
 
@@ -58,15 +58,16 @@ move_file()
 
     for(( i=0; i < 100 ; ++i )) do
         [[ $i = 0 ]] && tf="$stem.$ttype" || tf="$(printf '%s_%02d.%s' "${stem}" "${i}" "${ttype}")"
+        ret="$tf"
         tf="$dir_dest/$tf"
 
         if ln -T "$ul" "$tf" &>/dev/null && rm "$ul"  ; then
-            ret=0
+            ret=""
             break
         fi
     done
 
-    return ${ret}
+    return "${ret}"
 }
 
 ul="$EYEFI_UPLOADED"
@@ -82,16 +83,16 @@ else
     ttype="$(basename "${ul#*.}")"
     targetdir="$(printf "%s/%04d/%02d" "$TARGET_ROOT" "$year" "$month")"
 
-    success=$( move_file "$ul" "$stem.$ttype" "$targetdir" )
+    new_name=$( move_file "$ul" "$stem.$ttype" "$targetdir" )
 
-    if $success ; then
-        report="$(basename "$ul") uploaded to $targetdir"
+    if [[ ! -z "$new_name" ]] ; then
+        report="$(basename "$ul") moved to {$targetdir}/{$new_name}"
         
-        cd "$TARGET_ROOT"
         sync_dir="$(printf "%04d/%02d" "$year" "$month")"
-        s3cmd sync -q "$sync_dir" "$S3_BUCKET"
+        cd "{$TARGET_ROOT}/{$sync_dir}"
+        s3cmd put -q "$new_name" "{$S3_BUCKET}{$sync_dir}/"
 
-        report="$report\n'$sync_dir' synced with '$S3_BUCKET'"
+        report="$report : Uploaded to '{$S3_BUCKET}{$sync_dir}/{$new_name}'"
 
     else
         report="$(basename "$ul") uploaded, but couldn't move it."
