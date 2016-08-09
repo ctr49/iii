@@ -58,12 +58,14 @@ move_file()
 
     for(( i=0; i < 100 ; ++i )) do
         [[ $i = 0 ]] && tf="$stem.$ttype" || tf="$(printf '%s_%02d.%s' "${stem}" "${i}" "${ttype}")"
-        ret="$tf"
+        new_name="$tf"
         tf="$dir_dest/$tf"
 
         if ln -T "$ul" "$tf" &>/dev/null && rm "$ul"  ; then
-            ret=""
+            ret="${new_name}"
             break
+        else
+            ret=""
         fi
     done
 
@@ -88,9 +90,9 @@ else
     if [[ ! -z "$new_name" ]] ; then
         report="$(basename "$ul") moved to ${targetdir}/${new_name}"
         
+        cd "${TARGET_ROOT}"
         sync_dir="$(printf "%04d/%02d" "$year" "$month")"
-        cd "${TARGET_ROOT}/${sync_dir}"
-        s3cmd put -q "$new_name" "${S3_BUCKET}${sync_dir}/"
+        s3cmd put -q "${sync_dir}/$new_name" "${S3_BUCKET}${sync_dir}/"
 
         report="$report : Uploaded to '${S3_BUCKET}${sync_dir}/${new_name}'"
 
