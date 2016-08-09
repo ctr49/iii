@@ -3,7 +3,7 @@
 # Set variables
 export TARGET_ROOT=/backup/pictures
 export EYEFI_LOG="/var/log/iii/upload.log"
-export S3_BUCKET="s3://zeven11.cabuki.com/photos"
+export S3_BUCKET="s3://zeven11.cabuki.com/photos/"
 
 
 SOURCE="${BASH_SOURCE[0]}"

@@ -2,7 +2,7 @@
 test -z "$TARGET_ROOT" && TARGET_ROOT="$(dirname "$EYEFI_UPLOADED")"
 test -z "$EYEFI_LOG" && EYEFI_LOG="/var/log/iii/iiid.log"
 test -z "$FORMAT" && FORMAT="%04d%02d%02d_%02d%02d%02d"
-test -z "$S3_BUCKET" && S3_BUCKET="s3://zeven11.cabuki.com/photos"
+test -z "$S3_BUCKET" && S3_BUCKET="s3://zeven11.cabuki.com/photos/"
 
 # etime needs to have the format "/Y:M:D H:I:S"
 make_vars() {
