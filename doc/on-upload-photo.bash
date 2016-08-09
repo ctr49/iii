@@ -86,13 +86,13 @@ else
     new_name=$( move_file "$ul" "$stem.$ttype" "$targetdir" )
 
     if [[ ! -z "$new_name" ]] ; then
-        report="$(basename "$ul") moved to {$targetdir}/{$new_name}"
+        report="$(basename "$ul") moved to ${targetdir}/${new_name}"
         
         sync_dir="$(printf "%04d/%02d" "$year" "$month")"
-        cd "{$TARGET_ROOT}/{$sync_dir}"
-        s3cmd put -q "$new_name" "{$S3_BUCKET}{$sync_dir}/"
+        cd "${TARGET_ROOT}/${sync_dir}"
+        s3cmd put -q "$new_name" "${S3_BUCKET}${sync_dir}/"
 
-        report="$report : Uploaded to '{$S3_BUCKET}{$sync_dir}/{$new_name}'"
+        report="$report : Uploaded to '${S3_BUCKET}${sync_dir}/${new_name}'"
 
     else
         report="$(basename "$ul") uploaded, but couldn't move it."
