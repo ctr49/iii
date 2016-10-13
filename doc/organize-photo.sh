@@ -1,20 +1,5 @@
 #!/bin/bash
 
-# Trap errors & non-normal exit signals: 1/HUP, 2/INT, 3/QUIT, 15/TERM, ERR
-trap onExit 1 2 3 15 ERR
-
-# Define Error trapping function
-function onExit() {
-    local EXIT_STATUS=${1:-$?}
-    echo Exiting $0 with ${EXIT_STATUS} : "${ERR_MSG}"
-    exit ${EXIT_STATUS}
-}
-
-#####
-# 0. Check for required programs
-#####
-REALPATH=$( which realpath || which readlink ) || { ERR_MSG="ERROR : Could not find realpath or readlink."; onExit 1; }
-
 # Set variables
 export TARGET_ROOT=/backup/pictures
 export EYEFI_LOG="/var/log/iii/upload.log"
@@ -33,7 +18,7 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 while [[ $# -gt 0 ]]; do
 
-    export EYEFI_UPLOADED=$( ${REALPATH} "${1}" )
+    export EYEFI_UPLOADED=$( readlink -f "${1}" )
 
     source "$DIR"/on-upload-photo.bash
 
