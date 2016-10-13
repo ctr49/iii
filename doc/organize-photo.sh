@@ -13,7 +13,7 @@ function onExit() {
 #####
 # 0. Check for required programs
 #####
-REALPATH=`which realpath` || `which readlink` || { ERR_MSG="ERROR : Could not find realpath or readlink."; onExit 1; }
+REALPATH=$( which realpath || which readlink ) || { ERR_MSG="ERROR : Could not find realpath or readlink."; onExit 1; }
 
 # Set variables
 export TARGET_ROOT=/backup/pictures
