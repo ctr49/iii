@@ -23,7 +23,7 @@ j_time() {
 
 # Use iii-extract-riff-chunk to try to find the file time
 a_time() {
-    local a="$1"
+    local j="$1"
     local ttype="$(basename "${j#*.}")"
     local etime="$(iii-extract-riff-chunk "$a" '/RIFF.AVI /LIST.ncdt/nctg'|dd bs=1 skip=82 count=19 2>/dev/null)"
     [[ -z "$etime" ]] && return 1
@@ -41,7 +41,7 @@ m_time() {
 
 iii_report()
 {
-    echo "[$( date +'%Y-%m-%d %H:%M:%S' )] ${1}" >> "${EYEFI_LOG}"
+    echo "[$( date +'%Y-%m-%d %H:%M:%S' )] $@" >> "${EYEFI_LOG}"
 }
 
 move_file()
@@ -88,19 +88,17 @@ else
     new_name=$( move_file "$ul" "$stem.$ttype" "$targetdir" )
 
     if [[ ! -z "$new_name" ]] ; then
-        report="$(basename "$ul") moved to ${targetdir}/${new_name}"
+        report="${ul} moved to ${targetdir}/${new_name}"
         
         cd "${TARGET_ROOT}"
         sync_dir="$(printf "%04d/%02d" "$year" "$month")"
-        s3cmd put -q "${sync_dir}/$new_name" "${S3_BUCKET}${sync_dir}/"
-
-        report="$report : Uploaded to '${S3_BUCKET}${sync_dir}/${new_name}'"
+        iii_report $( /usr/local/bin/s3cmd put --no-progress "${targetdir}/${new_name}" "${S3_BUCKET}${sync_dir}/" )
 
     else
         report="$(basename "$ul") uploaded, but couldn't move it."
     fi
 fi
 
-echo "$report"
+#echo "$report"
 
 type iii_report &>/dev/null && iii_report "$report"
