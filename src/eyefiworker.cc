@@ -301,7 +301,7 @@ int eyefiworker::UploadPhoto(
     ls = lf.rfind('/');
     std::string lbn = (ls==std::string::npos)?lf:lf.substr(ls+1);
     std::string ttf;
-    std::string tlf= eyekinfig.get_logfile();
+    std::string tlf= kinfig->get_logfile();
     bool success = false;
     std::string td = kinfig->get_targetdir();
     for(int i=0;i<32767;++i) {
