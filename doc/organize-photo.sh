@@ -1,11 +1,5 @@
 #!/bin/bash
 
-# Set variables
-export TARGET_ROOT=/backup/pictures
-export EYEFI_LOG="/var/log/iii/upload.log"
-export S3_BUCKET="s3://zeven11.cabuki.com/photos/"
-
-
 SOURCE="${BASH_SOURCE[0]}"
 
 while [ -h "$SOURCE" ]; do # resolve $SOURCE until the file is no longer a symlink
@@ -17,11 +11,7 @@ done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 while [[ $# -gt 0 ]]; do
-
     export EYEFI_UPLOADED=$( readlink -f "${1}" )
-
     source "$DIR"/on-upload-photo.bash
-
     shift
-
 done
