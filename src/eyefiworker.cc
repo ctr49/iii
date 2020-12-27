@@ -121,7 +121,7 @@ static int E(eyefiworker* efs,const char *c,const std::exception& e) {
 }
 
 int eyefiworker::StartSession(
-	std::string macaddress,std::string cnonce,
+	const std::string& macaddress,const std::string& cnonce,
 	int transfermode,long transfermodetimestamp,
 	struct rns__StartSessionResponse &r ) try {
     syslog(LOG_INFO,
@@ -153,8 +153,8 @@ int eyefiworker::StartSession(
 }catch(const std::exception& e) { return E(this,"StartSession",e); }
 
 int eyefiworker::GetPhotoStatus(
-	std::string credential, std::string macaddress,
-	std::string filename, long filesize, std::string filesignature,
+	const std::string& credential, const std::string& macaddress,
+	const std::string& filename, long filesize, const std::string& filesignature,
 	int flags,
 	struct rns__GetPhotoStatusResponse &r ) try {
     syslog(LOG_INFO,
@@ -198,7 +198,7 @@ int eyefiworker::GetPhotoStatus(
 }catch(const std::exception& e) { return E(this,"GetPhotoStatus",e); }
 
 int eyefiworker::MarkLastPhotoInRoll(
-	std::string macaddress, int mergedelta,
+	const std::string& macaddress, int mergedelta,
 	struct rns__MarkLastPhotoInRollResponse&/* r */ ) try {
     syslog(LOG_INFO,
 	    "MarkLastPhotoInRoll request from %s with mergedelta=%d",
@@ -242,9 +242,9 @@ void eyefiworker::mime_writeclose(void *handle) {
 }
 
 int eyefiworker::UploadPhoto(
-	int fileid, std::string macaddress,
-	std::string filename, long filesize, std::string filesignature,
-	std::string encryption, int flags,
+	int fileid, const std::string& macaddress,
+	const std::string& filename, long filesize, const std::string& filesignature,
+	const std::string& encryption, int flags,
 	struct rns__UploadPhotoResponse& r ) try {
     syslog(LOG_INFO,
 	    "UploadPhoto request from %s with fileid=%d, filename=%s, filesize=%ld,"
@@ -256,7 +256,7 @@ int eyefiworker::UploadPhoto(
 
     std::string::size_type fnl=filename.length();
     if(fnl<sizeof(".tar") || strncmp(filename.c_str()+fnl-sizeof(".tar")+sizeof(""),".tar",sizeof(".tar")))
-	throw std::runtime_error(gnu::autosprintf("honestly, I expected the tarball coming here, not '%s'",filename.c_str()));
+	throw std::runtime_error(gnu::autosprintf("honestly, I expected the tarball coming here, not '%s'",filename.c_str()).operator std::string());
     std::string the_file(filename,0,fnl-sizeof(".tar")+sizeof(""));
     std::string the_log = the_file+".log";
 
@@ -287,9 +287,9 @@ int eyefiworker::UploadPhoto(
 	else continue;
 	int fd=open(f.c_str(),O_CREAT|O_WRONLY,0666);
 	if(fd<0)
-	    throw std::runtime_error(gnu::autosprintf("failed to create output file '%s'",f.c_str()));
+	    throw std::runtime_error(gnu::autosprintf("failed to create output file '%s'",f.c_str()).operator std::string());
 	if(!a.read_data_into_fd(fd))
-	    throw std::runtime_error(gnu::autosprintf("failed to untar file into '%s'",f.c_str()));
+	    throw std::runtime_error(gnu::autosprintf("failed to untar file into '%s'",f.c_str()).operator std::string());
 	close(fd);
     }
 
