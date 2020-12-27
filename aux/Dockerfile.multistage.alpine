@@ -1,0 +1,11 @@
+FROM alpine:latest as build
+
+COPY . /tmp/build
+RUN apk add --no-cache alpine-sdk autoconf automake bash confuse-dev gettext-dev git gsoap-dev libarchive-dev libressl-dev pkgconf sqlite-dev util-linux-dev && cd /tmp/build && bash autogen.bash --prefix=/opt && make clean all install
+
+FROM alpine:latest
+
+COPY --from=build /opt /opt
+RUN apk add --no-cache confuse gsoap libarchive gettext-asprintf libressl sqlite sqlite-libs libuuid && mkdir -p /opt/etc/iii
+EXPOSE 59278
+CMD ["/opt/sbin/iiid"]
