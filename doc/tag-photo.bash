@@ -6,7 +6,7 @@ LOG="$2"
 || { echo "couldn't find something useful" ; exit 1 ; }
 
 [[ -z "$WPS_U" ]] && WPS_U="*PUT_ME_HERE*"
-[[ -z "$WPS_R" ]] && WPS_R="*PUT_ME_HERE*"
+[[ -z "$WPS_K" ]] && WPS_R="*PUT_ME_HERE*"
 [[ -z "$LCACHE" ]] && LCACHE="/tmp/iii-locations-cache.sqlite"
 wps_locate() {
     local APS="$1"
@@ -17,7 +17,7 @@ wps_locate() {
     && RV="$(sqlite3 "$LCACHE" "SELECT v FROM lc WHERE k='$APSKEY'")" \
     || sqlite3 "$LCACHE" 'CREATE TABLE lc ( k varchar PRIMARY KEY, v varchar )'
     [[ -z "$RV" ]] || { echo "$RV" ; return 0 ; }
-    X="$(curl -s -H 'Content-Type: text/xml' -d "<?xml version='1.0'?><LocationRQ xmlns='http://skyhookwireless.com/wps/2005' version='2.6' street-address-lookup='none'><authentication version='2.0'><simple><username>$WPS_U</username><realm>$WPS_R</realm></simple></authentication>$APS</LocationRQ>" https://api.skyhookwireless.com/wps2/location)"
+    X="$(curl -s -H 'Content-Type: text/xml' -d "<?xml version='1.0'?><LocationRQ xmlns='http://skyhookwireless.com/wps/2005' version='2.28' hpe-confidence='68' street-address-lookup='none' timezone-lookup='false'><authentication version='2.2'><key username='$WPS_U' key='$WPS_K'/></authentication>$APS</LocationRQ>" https://api.skyhookwireless.com/wps2/location)"
     RV="$(xmlstarlet sel -N w=http://skyhookwireless.com/wps/2005 -t -m '/w:LocationRS/w:location/*' -o wl_ -v 'name()' -o '=' -v 'text()' -o ' ' - <<<"$X")"
     sqlite3 "$LCACHE" "INSERT INTO lc (k,v) VALUES ('$APSKEY','$RV')" &>/dev/null
     echo "$RV"
