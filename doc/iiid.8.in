@@ -74,6 +74,10 @@ about request is passed via environment variables.
 .TP
 \fBumask\fR = \fI002\fR
 The file mode creation mask.
+.TP
+\fBlogfile\fR = "\fI/var/log/iii/iiid.log\fR"
+Sets the log file. If the \fI%s\fR placeholder is
+present in the string, it is replaced with card mac address.
 
 .SH AUTHOR
 

@@ -13,6 +13,7 @@ class eyekinfig_t {
 	~eyekinfig_t();
 
 	std::string get_targetdir();
+	std::string get_logfile();
 	std::string get_upload_key();
 
 	std::string get_on_start_session();
